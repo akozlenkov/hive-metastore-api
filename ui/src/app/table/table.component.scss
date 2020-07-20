@@ -1,0 +1,7 @@
+.card-table {
+  padding: 0;
+  & > table {
+    margin-top: -1px;
+    margin-bottom: 0;
+  }
+}

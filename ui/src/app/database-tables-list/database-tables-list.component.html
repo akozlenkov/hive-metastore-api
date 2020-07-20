@@ -1,0 +1,42 @@
+<div class="card">
+  <div class="card-header">
+    Tables
+  </div>
+  <div class="card-body card-table" *ngIf="currentTables">
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item" *ngFor="let table of currentTables">
+        <div class="row">
+          <div class="col-md-3">
+            <a [routerLink]="['/databases', database.name, 'tables', table.name]">{{ table.name }}</a>
+          </div>
+          <div class="col-md-3">{{ table.owner }}</div>
+          <div class="col-md-3">{{ table.tableType }}</div>
+          <div class="col-md-3">{{ table.storageDescriptor?.location }}</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="card-body card-table" *ngIf="!currentTables">
+    <div class="card-body">
+      <div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body" *ngIf="currentTables && currentTables.length == 0">
+    <h5 class="card-title">Special title treatment</h5>
+    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+  </div>
+
+  <div class="card-footer" *ngIf="currentTables && currentTables.length != 0">
+    <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" [(ngModel)]="currentPage" (ngModelChange)="selectPage()">
+      <label ngbButtonLabel class="btn-primary" *ngFor="let page of [].constructor(pages); let i = index">
+        <input ngbButton type="radio" [value]="i"> {{ i+1 }}
+      </label>
+    </div>
+  </div>
+</div>

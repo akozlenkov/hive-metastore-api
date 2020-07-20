@@ -1,0 +1,105 @@
+<div *ngIf="table == null" class="d-flex justify-content-center">
+  <div class="spinner-border text-primary" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+
+<div *ngIf="table != null">
+  <h2>Table {{ table.name }}</h2>
+  <div class="card" style="margin-top: 20px;">
+    <div class="card-header">
+      Basic information
+    </div>
+    <div class="card-body card-table">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+          <div class="row">
+            <div class="col-md-3">Name</div>
+            <div class="col-md-9">{{ table.name }}</div>
+          </div>
+        </li>
+        <li class="list-group-item">
+          <div class="row">
+            <div class="col-md-3">Database</div>
+            <div class="col-md-9"><a [routerLink]="['/databases', table.database]">{{ table.database }}</a></div>
+          </div>
+        </li>
+        <li class="list-group-item">
+          <div class="row">
+            <div class="col-md-3">Owner</div>
+            <div class="col-md-9">{{ table.owner }}</div>
+          </div>
+        </li>
+        <li class="list-group-item">
+          <div class="row">
+            <div class="col-md-3">Table type</div>
+            <div class="col-md-9">{{ table.tableType }}</div>
+          </div>
+        </li>
+        <li class="list-group-item">
+          <div class="row">
+            <div class="col-md-3">Location</div>
+            <div class="col-md-9">{{ table.storageDescriptor.location }}</div>
+          </div>
+        </li>
+        <li class="list-group-item">
+          <div class="row">
+            <div class="col-md-3">Input format</div>
+            <div class="col-md-9">{{ table.storageDescriptor.input_format }}</div>
+          </div>
+        </li>
+        <li class="list-group-item">
+          <div class="row">
+            <div class="col-md-3">Output format</div>
+            <div class="col-md-9">{{ table.storageDescriptor.output_format }}</div>
+          </div>
+        </li>
+        <li class="list-group-item">
+          <div class="row">
+            <div class="col-md-3">Serialization library</div>
+            <div class="col-md-9">{{ table.storageDescriptor.serde_info.serialization_lib }}</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" *ngIf="table.storageDescriptor != null && table.storageDescriptor.columns.length != 0" style="margin-top: 30px;">
+    <div class="card-header">
+      Table columns
+    </div>
+    <div class="card-body card-table">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item" *ngFor="let column of table.storageDescriptor.columns">
+          <div class="row">
+            <div class="col-md-3">{{ column.name }}</div>
+            <div class="col-md-9">{{ column.type }}</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" *ngIf="table.parameters != null" style="margin-top: 30px;">
+    <div class="card-header">
+      Table parameters
+    </div>
+    <div class="card-body card-table">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item" *ngFor="let parameter of table.parameters | keyvalue">
+          <div class="row">
+            <div class="col-md-3">{{ parameter.key }}</div>
+            <div class="col-md-9">{{ parameter.value }}</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card border-danger" style="margin-top: 30px;">
+    <h5 class="card-header text-white bg-danger">Danger zone</h5>
+    <div class="card-body">
+    </div>
+  </div>
+</div>
+

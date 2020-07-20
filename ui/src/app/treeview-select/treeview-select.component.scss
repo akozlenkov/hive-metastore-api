@@ -1,0 +1,23 @@
+ngx-treeview {
+  & > .treeview-header {
+  }
+  & > div > .treeview-text {
+    text-align: center;
+  }
+  & > div > .treeview-container {
+    color: #007bff;
+    padding-right: 0 !important;
+    & > ngx-treeview-item > .treeview-item {
+      & > .list-group-item {
+        border-top: none;
+        padding: 0.75rem 0.15rem;
+      }
+      & > div > ngx-treeview-item > .treeview-item {
+        margin-left: 0 !important;
+        & > .list-group-item {
+          border-top: none;
+        }
+      }
+    }
+  }
+}

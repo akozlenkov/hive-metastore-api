@@ -1,0 +1,18 @@
+---
+host: localhost
+port: 9886
+secret: ewrererfefewdfe
+metastore:
+  host: dev-hadoop2.hdp.dev
+  port: 9083
+  security:
+    auth_mechanisms: GSSAPI
+    service: hive
+ldap:
+  host: dc1msk.pyn.ru
+  port: 389
+  base: DC=pyn,DC=ru
+  bind_dn:
+  bind_password:
+  user_filter: (sAMAccountName=%s)
+  group_filter: (member=%s)

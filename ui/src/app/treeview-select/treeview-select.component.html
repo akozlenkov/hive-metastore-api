@@ -1,0 +1,23 @@
+<ng-template #itemTemplate let-item="item" let-onCollapseExpand="onCollapseExpand" let-onCheckedChange="onCheckedChange">
+  <div class="list-group-item" (click)="selectItem(item)" [ngClass]="{'active': item['active'] }">
+    <i style="height: 25px; width: 15px; float: left;">
+      <i *ngIf="item.children" (click)="onCollapseExpand()" [ngSwitch]="item.collapsed">
+        <fa-icon *ngSwitchCase="true" [icon]="faPlus"></fa-icon>
+        <fa-icon *ngSwitchCase="false" [icon]="faMinus"></fa-icon>
+      </i>
+    </i>
+    <fa-icon *ngIf="item.value.type == 'table'" [icon]="faTable" style="margin: 0 5px;"></fa-icon>
+    <fa-icon *ngIf="item.value.type == 'database'" [icon]="faDatabase" style="margin: 0 5px;"></fa-icon>
+    {{ item.text }}
+  </div>
+</ng-template>
+
+<ng-template #headerTemplate let-config="config" let-item="item" let-onCollapseExpand="onCollapseExpand" let-onCheckedChange="onCheckedChange" let-onFilterTextChange="onFilterTextChange"></ng-template>
+
+<ngx-treeview
+  [items]="items"
+  [config]="config"
+  [itemTemplate]="itemTemplate"
+  [headerTemplate]="headerTemplate"
+>
+</ngx-treeview>

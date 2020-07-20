@@ -1,0 +1,83 @@
+<div *ngIf="!database" class="d-flex justify-content-center">
+  <div class="spinner-border text-primary" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+
+<div *ngIf="database">
+  <app-create-table [database]="database"></app-create-table>
+
+  <h2>Database {{ database.name }}</h2>
+
+  <div class="card">
+    <div class="card-header">
+      Basic information
+    </div>
+    <div class="card-body card-table">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+          <div class="row">
+            <div class="col-md-3">Name</div>
+            <div class="col-md-9">{{ database.name }}</div>
+          </div>
+        </li>
+        <li class="list-group-item">
+          <div class="row">
+            <div class="col-md-3">Location</div>
+            <div class="col-md-9">{{ database.location }}</div>
+          </div>
+        </li>
+        <li class="list-group-item">
+          <div class="row">
+            <div class="col-md-3">Description</div>
+            <div class="col-md-9">{{ database.description }}</div>
+          </div>
+        </li>
+        <li class="list-group-item">
+          <div class="row">
+            <div class="col-md-3">Owner</div>
+            <div class="col-md-9">{{ database.owner }}</div>
+          </div>
+        </li>
+        <li class="list-group-item">
+          <div class="row">
+            <div class="col-md-3">Owner type</div>
+            <div class="col-md-9">{{ database.ownerType }}</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" *ngIf="database.parameters">
+    <div class="card-header">
+      Database parameters
+    </div>
+    <div class="card-body">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item" *ngFor="let parameter of database.parameters | keyvalue">
+          <div class="row">
+            <div class="col-md-3">{{ parameter.key }}</div>
+            <div class="col-md-9">{{ parameter.value }}</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <app-database-tables-list [data]="database"></app-database-tables-list>
+
+  <div class="card border-danger">
+    <h5 class="card-header text-white bg-danger">Danger zone</h5>
+    <div class="card-body">
+      <h5 class="card-title">Edit database</h5>
+      <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+      <app-edit-database [database]="database" (databaseSaved)="onEdit($event)"></app-edit-database>
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">Delete database</h5>
+      <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+      <app-delete-database [database]="database" (databaseDeleted)="onDelete($event)"></app-delete-database>
+    </div>
+  </div>
+</div>

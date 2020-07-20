@@ -1,0 +1,31 @@
+<nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+  <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="#">Hive Metastore</a>
+  <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search" [(ngModel)]="filterText" (ngModelChange)="onFilterChanged($event)">
+  <form class="navbar-nav form-inline mr-0 px-3">
+    <button class="btn btn-primary" type="submit" (click)="logout()">Logout</button>
+  </form>
+</nav>
+
+<div class="container-fluid">
+  <div class="row">
+    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+      <div class="sidebar-sticky">
+        <div style="padding: 10px;">
+          <app-create-database (databaseCreated)="onDatabaseCreated($event)"></app-create-database>
+        </div>
+        <ngx-treeview-select
+          [items]="items"
+          [config]="config"
+          [selectedItem]="selectedItem"
+          [eventEmitter]="eventEmitter"
+          (itemSelected)="onSelectedChange($event)"
+        ></ngx-treeview-select>
+      </div>
+    </nav>
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4" >
+      <div style="margin-top: 20px;">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
+</div>

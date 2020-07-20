@@ -1,0 +1,12 @@
+{
+  "/auth/*": {
+    "target": "http://localhost:9886",
+    "secure": false,
+    "logLevel": "debug"
+  },
+  "/api/*": {
+    "target": "http://localhost:9886",
+    "secure": false,
+    "logLevel": "debug"
+  }
+}
