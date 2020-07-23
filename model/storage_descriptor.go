@@ -6,13 +6,13 @@ import (
 	"hive-metastore-api/thrift/gen-go/hive_metastore"
 )
 
-type StorageDescriptor	struct{
-	Columns				[]*Column			`json:"columns"`
-	Location			string				`json:"location,omitempty"`
-	InputFormat 		string				`json:"input_format"`
-	OutputFormat 		string				`json:"output_format"`
-	SerDeInfo			*SerDeInfo			`json:"serde_info,omitempty"`
-	Parameters			map[string]string	`json:"parameters,omitempty"`
+type StorageDescriptor struct {
+	Columns      []*Column         `json:"columns"`
+	Location     string            `json:"location,omitempty"`
+	InputFormat  string            `json:"inputFormat"`
+	OutputFormat string            `json:"outputFormat"`
+	SerDeInfo    *SerDeInfo        `json:"serDeInfo,omitempty"`
+	Parameters   map[string]string `json:"parameters,omitempty"`
 }
 
 func NewStorageDescriptor() *StorageDescriptor {
@@ -44,7 +44,7 @@ func (s *StorageDescriptor) ToMetaStorageDescriptor(tableType string) (*hive_met
 		f.Type = c.Type
 
 		if !hma.IsEmpty(c.Comment) {
-			f.Name = c.Name
+			f.Comment = &c.Comment
 		}
 
 		r.Cols = append(r.Cols, f)
@@ -89,7 +89,6 @@ func NewStorageDescriptorFromMeta(r *hive_metastore.StorageDescriptor) *StorageD
 		if c.Comment != nil {
 			column.Comment = *c.Comment
 		}
-
 		s.Columns = append(s.Columns, column)
 	}
 	if r.Location != nil {
@@ -97,6 +96,7 @@ func NewStorageDescriptorFromMeta(r *hive_metastore.StorageDescriptor) *StorageD
 	}
 	s.InputFormat = r.InputFormat
 	s.OutputFormat = r.OutputFormat
+	s.Parameters = r.Parameters
 	s.SerDeInfo = NewSerDeInfoFromMeta(r.SerdeInfo)
 	return s
 }

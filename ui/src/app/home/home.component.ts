@@ -7,6 +7,8 @@ import { ApiService } from '../api.service';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { NavigationService } from '../navigation.service';
 import { AlertService } from 'ngx-alerts';
+import {noop, Observable, Observer, of} from "rxjs";
+import {map, switchMap, tap} from "rxjs/operators";
 
 @Component({
   selector: 'app-home',
@@ -25,8 +27,8 @@ export class HomeComponent implements OnInit {
   }
   public selectedItem;
   public eventEmitter = new EventEmitter();
-
-
+  public search: string;
+  public suggestions: Observable<string[]>;
 
   constructor(
     private auth: AuthService,
@@ -34,12 +36,25 @@ export class HomeComponent implements OnInit {
     private nav: NavigationService,
     private router: Router
   ){
-    this.items = this.nav.getNavigationTree();
+    this.nav.getNavigationTree().subscribe((items) => this.items = items);
   }
 
   ngOnInit(): void {
-
-  }
+    this.suggestions = new Observable((observer: Observer<string>) => {
+      observer.next(this.search);
+    }).pipe(
+      switchMap((query: string) => {
+        if (query) {
+          return this.api.search(query).pipe(
+            map((data: string[]) => data),
+            tap(() => noop, err => {
+              console.error(err);
+            })
+          );
+        }
+        return of([]);
+      }));
+  };
 
   logout() {
     this.router.navigate(['/login']);
@@ -60,6 +75,10 @@ export class HomeComponent implements OnInit {
 
   onFilterChanged(event) {
     this.eventEmitter.emit(event);
+  }
+
+  typeaheadOnSelect(event) {
+    console.log(event);
   }
 
   onDatabaseCreated(database) {

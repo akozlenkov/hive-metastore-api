@@ -1,9 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
 import {Database} from "../database";
-import {FormArray, FormBuilder, FormGroup, NgModel, Validators} from "@angular/forms";
+import {FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {TreeviewItem} from "ngx-treeview";
 import {ApiService} from "../api.service";
 import {AlertService} from "ngx-alerts";
 
@@ -35,7 +34,7 @@ export class EditDatabaseComponent implements OnInit {
     private alertService: AlertService,
     private modalService: NgbModal,
     private formBuilder: FormBuilder
-  ) { }
+  ) {}
 
   ngOnInit() {
     this._data.subscribe(database => {
@@ -46,23 +45,21 @@ export class EditDatabaseComponent implements OnInit {
   }
 
   get f() { return this.formGroup.controls; }
-  get t() { return this.f.parameters as FormArray; }
+  get parameters() { return this.f.parameters as FormArray; }
 
   editDatabase(content) {
-    this.modalService.open(content, { size: 'xl', ariaLabelledBy: 'edit-database-title', centered: true}).result.then((result) => {
-    }, (reason) => {
-    });
+    this.modalService.open(content, { size: 'xl', ariaLabelledBy: 'modal-basic-title', centered: true});
   }
 
   addParameter() {
-    this.t.push(this.formBuilder.group({
+    this.parameters.push(this.formBuilder.group({
       key: ['', Validators.required],
       value: ['', Validators.required]
     }));
   }
 
   deleteParameter(index) {
-    this.t.removeAt(index);
+    this.parameters.removeAt(index);
   }
 
   private resetForm() {
@@ -77,18 +74,9 @@ export class EditDatabaseComponent implements OnInit {
     this.formGroup.setValue({
       owner: this._database.owner,
       ownerType: this._database.ownerType,
-      parameters: [] });
-
-    if (this._database.parameters != undefined) {
-      for (const [key, value] of Object.entries(this._database.parameters)) {
-        let form = this.formBuilder.group({
-          key: ['', Validators.required],
-          value: ['', Validators.required]
-        });
-        form.setValue({ key, value })
-        this.t.push(form);
-      }
-    }
+      parameters: []
+    });
+    this.parametersToForm(this._database.parameters, this.parameters);
   }
 
   cancelEdit(modal) {
@@ -98,6 +86,7 @@ export class EditDatabaseComponent implements OnInit {
   }
 
   saveDatabase(modal) {
+
     this.submitted = true;
 
     if (this.formGroup.invalid) {
@@ -113,18 +102,31 @@ export class EditDatabaseComponent implements OnInit {
       })
     }
 
-    this.api.updateDatabase(this._database.name, {
+    let database = {
       owner: this.f.owner.value,
       ownerType: this.f.ownerType.value,
       parameters
-    }).subscribe(data => {
-      this.api.getDatabase(this._database.name).subscribe((database: Database) => {
-        this._database = database;
-        this.loading = false;
-        this.submitted = false;
-        modal.close();
-        this.databaseSaved.emit(database);
-      })
+    }
+
+    this.api.updateDatabase(this._database.name, database).subscribe((database:Database) => {
+      this._database = database;
+      this.loading = false;
+      this.submitted = false;
+      modal.close();
+      this.databaseSaved.emit(database);
     }, error => this.alertService.danger(error));
+  }
+
+  private parametersToForm(parameters, arr) {
+    if (parameters != undefined) {
+      for (const [key, value] of Object.entries(parameters)) {
+        let form = this.formBuilder.group({
+          key: ['', Validators.required],
+          value: ['', Validators.required]
+        });
+        form.setValue({ key, value })
+        arr.push(form);
+      }
+    }
   }
 }

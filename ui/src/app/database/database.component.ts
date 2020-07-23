@@ -1,13 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ApiService } from '../api.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from 'ngx-alerts';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Database } from '../database';
 import { NavigationService } from '../navigation.service';
-import { forkJoin } from 'rxjs';
-import { Table } from "../table";
+
 
 @Component({
   selector: 'app-database',
@@ -21,6 +18,7 @@ export class DatabaseComponent implements OnInit {
   constructor(
     private api: ApiService,
     private nav: NavigationService,
+    private alertService: AlertService,
     private router: Router,
     private activateRoute: ActivatedRoute)
   {
@@ -30,7 +28,7 @@ export class DatabaseComponent implements OnInit {
         this.api.getTables(params['database']).subscribe((result: { count, tables }) => {
           this.tables = result.tables;
         });
-      });
+      }, error => this.alertService.danger(error));
     });
   }
 
@@ -43,5 +41,9 @@ export class DatabaseComponent implements OnInit {
   onDelete(database) {
     this.nav.deleteDatabaseFromTree(database.name);
     this.router.navigate(['/']);
+  }
+
+  tableCreated(table) {
+    this.router.navigate(['/databases', table.database, 'tables', table.name]);
   }
 }

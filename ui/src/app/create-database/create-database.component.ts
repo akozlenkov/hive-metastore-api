@@ -29,23 +29,21 @@ export class CreateDatabaseComponent implements OnInit {
   }
 
   get f() { return this.formGroup.controls; }
-  get t() { return this.f.parameters as FormArray; }
+  get parameters() { return this.f.parameters as FormArray; }
 
   openModal(content) {
-    this.modalService.open(content, { size: 'xl', ariaLabelledBy: 'modal-basic-title', centered: true}).result.then((result) => {
-    }, (reason) => {
-    });
+    this.modalService.open(content, { size: 'xl', ariaLabelledBy: 'modal-basic-title', centered: true});
   }
 
   addParameter() {
-    this.t.push(this.formBuilder.group({
+    this.parameters.push(this.formBuilder.group({
       key: ['', Validators.required],
       value: ['', Validators.required]
     }));
   }
 
   deleteParameter(index) {
-    this.t.removeAt(index);
+    this.parameters.removeAt(index);
   }
 
   createDatabase(modal) {
@@ -72,14 +70,12 @@ export class CreateDatabaseComponent implements OnInit {
       ownerType: this.f.ownerType.value,
       parameters
     }).subscribe(
-      (data) => {
-        this.api.getDatabase(this.f.name.value).subscribe((database:Database) => {
-          this.loading = false;
-          this.submitted = false;
-          this.databaseCreated.emit(database)
-          modal.close();
-          this.resetForm();
-        });
+      (database:Database) => {
+        this.loading = false;
+        this.submitted = false;
+        this.databaseCreated.emit(database)
+        modal.close();
+        this.resetForm();
       },
       error => {
         this.loading = false;

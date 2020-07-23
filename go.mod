@@ -11,7 +11,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/elastic/go-ucfg v0.8.3
 	github.com/fatih/color v1.9.0 // indirect
-	github.com/gabriel-vasile/mimetype v1.1.1
+	github.com/gabriel-vasile/mimetype v1.1.1 // indirect
 	github.com/hokaccha/go-prettyjson v0.0.0-20190818114111-108c894c2c0e // indirect
 	github.com/jawher/mow.cli v1.1.0
 	github.com/jtblin/go-ldap-client v0.0.0-20170223121919-b73f66626b33
@@ -23,6 +23,7 @@ require (
 	github.com/yudai/gojsondiff v1.0.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
+	go.mongodb.org/mongo-driver v1.3.5
 	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
 	gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d // indirect
 	gopkg.in/ldap.v2 v2.5.1 // indirect

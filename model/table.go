@@ -8,14 +8,14 @@ import (
 )
 
 type Table struct {
-	Name				string					`json:"name"`
-	Database			string					`json:"database"`
-	Owner				string					`json:"owner,omitempty"`
-	TableType			string					`json:"tableType"`
-	StorageDescriptor   *StorageDescriptor		`json:"storageDescriptor"`
-	PartitionKeys		[]*Column				`json:"partitionKeys,omitempty"`
-	ViewText			string					`json:"viewText,omitempty"`
-	Parameters			map[string]string		`json:"parameters,omitempty"`
+	Name              string             `json:"name"`
+	Database          string             `json:"database"`
+	Owner             string             `json:"owner,omitempty"`
+	TableType         string             `json:"tableType"`
+	StorageDescriptor *StorageDescriptor `json:"storageDescriptor"`
+	PartitionKeys     []*Column          `json:"partitionKeys,omitempty"`
+	ViewText          string             `json:"viewText,omitempty"`
+	Parameters        map[string]string  `json:"parameters,omitempty"`
 }
 
 func NewTable() *Table {
@@ -62,8 +62,6 @@ func (t *Table) ToMetaTable(owner string) (*hive_metastore.Table, error) {
 		return nil, fmt.Errorf("storage descriptor required")
 	}
 
-
-
 	if r.Sd, err = t.StorageDescriptor.ToMetaStorageDescriptor(r.TableType); err != nil {
 		return nil, err
 	}
@@ -83,7 +81,7 @@ func (t *Table) ToMetaTable(owner string) (*hive_metastore.Table, error) {
 			f.Type = c.Type
 
 			if !hma.IsEmpty(c.Comment) {
-				f.Name = c.Name
+				f.Comment = &c.Comment
 			}
 			r.PartitionKeys = append(r.PartitionKeys, f)
 		}

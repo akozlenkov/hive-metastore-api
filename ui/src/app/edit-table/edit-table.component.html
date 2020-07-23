@@ -1,10 +1,8 @@
-<button type="button" class="btn btn-success float-right" data-toggle="button" aria-pressed="false" (click)="createTable(modalTemplate)">
-  Create table
-</button>
+<button class="btn btn-danger" (click)="editTable(modalTemplate)">Edit</button>
 
 <ng-template #modalTemplate let-modal>
   <div class="modal-header">
-    <h4 class="modal-title" id="modal-basic-title">Create new table</h4>
+    <h4 class="modal-title" id="modal-basic-title">Edit table {{ table.name }}</h4>
   </div>
   <div class="modal-body">
     <form [formGroup]="formGroup">
@@ -33,7 +31,7 @@
         <input type="text" class="form-control" id="inputOwner" formControlName="owner" [ngClass]="{ 'is-invalid': submitted && f.owner.errors }">
       </div>
       <p>Parameters</p>
-      <div class="form-row" *ngFor="let parameter of parameters.controls ; let i = index" [formGroup]="parameter">
+      <div class="form-row" *ngFor="let parameter of tableParameters.controls ; let i = index" [formGroup]="parameter">
         <div class="form-group col-md-6" >
           <input type="text" formControlName="key" class="form-control" [ngClass]="{ 'is-invalid': submitted && parameter['controls']['key'].errors }">
           <div *ngIf="submitted && parameter['controls']['key'].errors" class="invalid-feedback">
@@ -47,12 +45,12 @@
           </div>
         </div>
         <div class="form-group col-md-1">
-          <span class="btn btn-danger" (click)="deleteParameter(parameters, i)">Delete</span>
+          <span class="btn btn-danger" (click)="deleteParameter(tableParameters, i)">Delete</span>
         </div>
       </div>
       <div class="form-row">
         <div class="form-group col-md-12">
-          <div class="btn btn-success" (click)="addParameter(parameters)">Add</div>
+          <div class="btn btn-success" (click)="addParameter(tableParameters)">Add</div>
         </div>
       </div>
       <hr>
@@ -83,37 +81,6 @@
       <div class="form-row">
         <div class="form-group col-md-12">
           <div class="btn btn-success" (click)="addColumn(columns)">Add</div>
-        </div>
-      </div>
-      <hr>
-
-      <h5>Partition columns</h5>
-      <div class="form-row" *ngFor="let column of partitionKeys.controls ; let i = index" [formGroup]="column">
-        <div class="form-group col-md-6" >
-          <label>Name</label>
-          <input type="text" formControlName="name" class="form-control" [ngClass]="{ 'is-invalid': submitted && column['controls']['name'].errors }">
-          <div *ngIf="submitted && column['controls']['name'].errors" class="invalid-feedback">
-            <div *ngIf="column['controls']['name'].errors.required">Column name is required</div>
-          </div>
-        </div>
-        <div class="form-group col-md-5">
-          <label>Type</label>
-          <input type="text" formControlName="type" class="form-control" [ngClass]="{ 'is-invalid': submitted && column['controls']['type'].errors }">
-          <div *ngIf="submitted && column['controls']['type'].errors" class="invalid-feedback">
-            <div *ngIf="column['controls']['type'].errors.required">Column type is required</div>
-          </div>
-        </div>
-        <div class="form-group col-md-11">
-          <label>Comment</label>
-          <textarea class="form-control" formControlName="comment" [ngClass]="{ 'is-invalid': submitted && column['controls']['comment'].errors }"></textarea>
-        </div>
-        <div class="form-group col-md-1">
-          <span class="btn btn-danger" (click)="deleteParameter(partitionKeys, i)">Delete</span>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group col-md-12">
-          <div class="btn btn-success" (click)="addColumn(partitionKeys)">Add</div>
         </div>
       </div>
       <hr>
@@ -198,7 +165,7 @@
     </form>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-danger" (click)="saveTable(modal)">Create</button>
-    <button type="button" class="btn btn-primary" (click)="cancelCreation(modal)">Cancel</button>
+    <button [disabled]="loading" type="button" class="btn btn-primary" (click)="saveTable(modal)"><span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>Save</button>
+    <button type="button" class="btn btn-danger" (click)="cancelEdit(modal)">Cancel</button>
   </div>
 </ng-template>

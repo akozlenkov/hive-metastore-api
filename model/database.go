@@ -8,12 +8,13 @@ import (
 )
 
 type Database struct {
-	Name 		string				`json:"name"`
-	Location	string				`json:"location"`
-	Description	string				`json:"description,omitempty"`
-	Owner		string				`json:"owner,omitempty"`
-	OwnerType	string				`json:"ownerType,omitempty"`
-	Parameters	map[string]string	`json:"parameters,omitempty"`
+	Name        string            `json:"name"`
+	Location    string            `json:"location"`
+	Description string            `json:"description,omitempty"`
+	Owner       string            `json:"owner,omitempty"`
+	OwnerType   string            `json:"ownerType,omitempty"`
+	Parameters  map[string]string `json:"parameters,omitempty"`
+	Tags        []string          `json:"tags,omitempty"`
 }
 
 func NewDatabase() *Database {
@@ -33,6 +34,27 @@ func NewDatabaseFromMeta(r *hive_metastore.Database) *Database {
 	}
 	database.Parameters = r.Parameters
 	return database
+}
+
+func (db *Database) Merge(r *hive_metastore.Database) *Database {
+	if !hma.IsEmpty(db.Name) {
+		db.Name = r.Name
+	}
+
+	if r.LocationUri != nil {
+		db.Location = *r.LocationUri
+	}
+
+	if hma.IsEmpty(db.Description) {
+		db.Description = r.Description
+	}
+
+	if r.OwnerName != nil {
+		db.Owner = *r.OwnerName
+		db.OwnerType = r.OwnerType.String()
+	}
+	db.Parameters = r.Parameters
+	return db
 }
 
 func (db *Database) ToMetaDatabase(owner string) (*hive_metastore.Database, error) {

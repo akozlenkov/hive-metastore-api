@@ -2,6 +2,8 @@ package controller
 
 import (
 	"github.com/labstack/echo/v4"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	hma "hive-metastore-api"
 	"hive-metastore-api/model"
 	"hive-metastore-api/thrift/gen-go/hive_metastore"
@@ -10,10 +12,12 @@ import (
 )
 
 type ApiController struct {
-	Config hma.Config
+	Config      hma.Config
+	MongoClient *mongo.Client
 }
 
 func (c ApiController) Init(group *echo.Group) {
+	group.GET("/search", c.Search)
 	group.GET("/databases", c.GetDatabases)
 	group.POST("/databases", c.CreateDatabases)
 	group.GET("/databases/:database", c.GetDatabase)
@@ -26,6 +30,27 @@ func (c ApiController) Init(group *echo.Group) {
 	group.DELETE("/databases/:database/tables/:table", c.DeleteTable)
 }
 
+func (c ApiController) Search(context echo.Context) error {
+	result := make([]string, 0)
+
+	q := context.QueryParam("q")
+	cur, err := c.MongoClient.Database("hma").Collection("databases").Find(context.Request().Context(), bson.M{"$text": bson.M{"$search": q}})
+	if err != nil {
+		return err
+	}
+	defer cur.Close(context.Request().Context())
+
+	for cur.Next(context.Request().Context()) {
+		var database model.Database
+		if err := cur.Decode(&database); err != nil {
+			return err
+		}
+		result = append(result, database.Name)
+	}
+
+	return context.JSON(http.StatusOK, result)
+}
+
 func (ApiController) GetDatabases(context echo.Context) error {
 	thriftClient := context.Get("thriftClient").(*hive_metastore.ThriftHiveMetastoreClient)
 	databases, err := thriftClient.GetAllDatabases(context.Request().Context())
@@ -35,7 +60,7 @@ func (ApiController) GetDatabases(context echo.Context) error {
 	return context.JSON(http.StatusOK, map[string]interface{}{"count": len(databases), "databases": databases})
 }
 
-func (ApiController) CreateDatabases(context echo.Context) error {
+func (c ApiController) CreateDatabases(context echo.Context) error {
 	thriftClient := context.Get("thriftClient").(*hive_metastore.ThriftHiveMetastoreClient)
 	user := context.Get("user").(string)
 
@@ -52,19 +77,26 @@ func (ApiController) CreateDatabases(context echo.Context) error {
 	if err := thriftClient.CreateDatabase(context.Request().Context(), r); err != nil {
 		return err
 	}
-	return context.JSON(http.StatusCreated, "OK")
+
+	d, err := thriftClient.GetDatabase(context.Request().Context(), r.Name)
+	if err != nil {
+		return err
+	}
+	return context.JSON(http.StatusCreated, model.NewDatabaseFromMeta(d))
 }
 
-func (ApiController) GetDatabase(context echo.Context) error {
+func (c ApiController) GetDatabase(context echo.Context) error {
 	thriftClient := context.Get("thriftClient").(*hive_metastore.ThriftHiveMetastoreClient)
+
 	r, err := thriftClient.GetDatabase(context.Request().Context(), context.Param("database"))
 	if err != nil {
 		return err
 	}
+
 	return context.JSON(http.StatusOK, model.NewDatabaseFromMeta(r))
 }
 
-func (ApiController) UpdateDatabase(context echo.Context) error {
+func (c ApiController) UpdateDatabase(context echo.Context) error {
 	thriftClient := context.Get("thriftClient").(*hive_metastore.ThriftHiveMetastoreClient)
 	r, err := thriftClient.GetDatabase(context.Request().Context(), context.Param("database"))
 	if err != nil {
@@ -115,7 +147,12 @@ func (ApiController) UpdateDatabase(context echo.Context) error {
 	if err := thriftClient.AlterDatabase(context.Request().Context(), context.Param("database"), r); err != nil {
 		return err
 	}
-	return context.JSON(http.StatusAccepted, "OK")
+
+	d, err := thriftClient.GetDatabase(context.Request().Context(), r.Name)
+	if err != nil {
+		return err
+	}
+	return context.JSON(http.StatusAccepted, model.NewDatabaseFromMeta(d))
 }
 
 func (ApiController) DeleteDatabase(context echo.Context) error {
@@ -154,7 +191,12 @@ func (ApiController) CreateTable(context echo.Context) error {
 	if err := thriftClient.CreateTable(context.Request().Context(), r); err != nil {
 		return err
 	}
-	return context.JSON(http.StatusCreated, "OK")
+
+	t, err := thriftClient.GetTable(context.Request().Context(), r.DbName, r.TableName)
+	if err != nil {
+		return err
+	}
+	return context.JSON(http.StatusCreated, model.NewTableFromMeta(t))
 }
 
 func (ApiController) GetTable(context echo.Context) error {
@@ -225,7 +267,7 @@ func (ApiController) UpdateTable(context echo.Context) error {
 				}
 
 				if !hma.IsEmpty(c.Comment) {
-					f.Name = c.Name
+					f.Comment = &c.Comment
 				}
 				columns = append(columns, f)
 			}
@@ -252,6 +294,10 @@ func (ApiController) UpdateTable(context echo.Context) error {
 			if table.StorageDescriptor.SerDeInfo.Parameters != nil {
 				r.Sd.SerdeInfo.Parameters = table.StorageDescriptor.SerDeInfo.Parameters
 			}
+		}
+
+		if table.StorageDescriptor.Parameters != nil {
+			r.Sd.Parameters = table.StorageDescriptor.Parameters
 		}
 	}
 
@@ -292,7 +338,12 @@ func (ApiController) UpdateTable(context echo.Context) error {
 	if err := thriftClient.AlterTable(context.Request().Context(), context.Param("database"), context.Param("table"), r); err != nil {
 		return err
 	}
-	return context.JSON(http.StatusAccepted, "OK")
+
+	t, err := thriftClient.GetTable(context.Request().Context(), r.DbName, r.TableName)
+	if err != nil {
+		return err
+	}
+	return context.JSON(http.StatusAccepted, model.NewTableFromMeta(t))
 }
 
 func (ApiController) DeleteTable(context echo.Context) error {

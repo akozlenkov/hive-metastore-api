@@ -6,6 +6,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TreeviewModule } from 'ngx-treeview';
 import { NgxBootstrapTreeviewModule } from 'ngx-bootstrap-treeview';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AlertModule } from 'ngx-alerts';
 import { AppRoutingModule } from './app-routing.module';
@@ -25,6 +26,8 @@ import { CreateTableComponent } from './create-table/create-table.component';
 import { DeleteDatabaseComponent } from './delete-database/delete-database.component';
 import { EditDatabaseComponent } from './edit-database/edit-database.component';
 import { CreateDatabaseComponent } from './create-database/create-database.component';
+import { DeleteTableComponent } from './delete-table/delete-table.component';
+import { EditTableComponent } from './edit-table/edit-table.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +43,9 @@ import { CreateDatabaseComponent } from './create-database/create-database.compo
     CreateTableComponent,
     DeleteDatabaseComponent,
     EditDatabaseComponent,
-    CreateDatabaseComponent
+    CreateDatabaseComponent,
+    DeleteTableComponent,
+    EditTableComponent
   ],
   imports: [
     BrowserModule,
@@ -53,6 +58,7 @@ import { CreateDatabaseComponent } from './create-database/create-database.compo
     AlertModule.forRoot({maxMessages: 5, timeout: 5000, position: 'right'}),
     TreeviewModule.forRoot(),
     BrowserAnimationsModule,
+    TypeaheadModule.forRoot(),
     NgbModule
   ],
   providers: [

@@ -1,5 +1,5 @@
 <ng-template #itemTemplate let-item="item" let-onCollapseExpand="onCollapseExpand" let-onCheckedChange="onCheckedChange">
-  <div class="list-group-item" (click)="selectItem(item)" [ngClass]="{'active': item['active'] }">
+  <div class="list-group-item" (click)="selectItem(item)" [ngClass]="{'active': item.value.active }">
     <i style="height: 25px; width: 15px; float: left;">
       <i *ngIf="item.children" (click)="onCollapseExpand()" [ngSwitch]="item.collapsed">
         <fa-icon *ngSwitchCase="true" [icon]="faPlus"></fa-icon>

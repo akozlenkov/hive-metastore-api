@@ -24,7 +24,7 @@ export class TreeviewSelectComponent implements OnInit, OnChanges {
   faTable = faTable;
   faDatabase = faDatabase;
 
-  constructor(public i18n: TreeviewI18n) {}
+  constructor() {}
 
   ngOnInit() {
     this.eventEmitter.subscribe(event => {
@@ -45,9 +45,9 @@ export class TreeviewSelectComponent implements OnInit, OnChanges {
 
   public selectItem(item: TreeviewItem): void {
     if (item && item !== this.selectedItem) {
-      item['active'] = true;
+      item.value['active'] = true;
       if (this.selectedItem) {
-        delete this.selectedItem['active'];
+        delete this.selectedItem.value['active'];
       }
       this.itemSelected.emit(item);
     }

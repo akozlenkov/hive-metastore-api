@@ -6,4 +6,5 @@ export class Database {
   owner: string;
   ownerType: string;
   parameters?: any;
+  tags?: string[]
 }

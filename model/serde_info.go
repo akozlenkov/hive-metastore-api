@@ -6,9 +6,9 @@ import (
 	"hive-metastore-api/thrift/gen-go/hive_metastore"
 )
 
-type SerDeInfo struct{
-	SerializationLib	string				`json:"serialization_lib,omitempty"`
-	Parameters			map[string]string	`json:"parameters,omitempty"`
+type SerDeInfo struct {
+	SerializationLib string            `json:"serializationLib,omitempty"`
+	Parameters       map[string]string `json:"parameters,omitempty"`
 }
 
 func NewSerDeInfo() *SerDeInfo {
